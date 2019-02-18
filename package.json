@@ -14,6 +14,8 @@
     "test": "react-scripts test",
     "test:c": "react-scripts test --coverage",
     "eject": "react-scripts eject",
+    "lint": "./node_modules/eslint/bin/eslint.js --fix src/**/*.js -c .eslintrc ",
+    "lint:fix": "yarn lint --fix",
     "commit": "npx git-cz"
   },
   "browserslist": [

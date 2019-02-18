@@ -13,9 +13,9 @@ const TextField = (props) => {
   );
 };
 TextField.defaultProps = {
-  err: null,
+  error: null,
 };
 TextField.propTypes = {
-  err: propTypes.string,
+  error: propTypes.string,
 };
 export default TextField;
