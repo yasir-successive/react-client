@@ -3,22 +3,6 @@ import PropTypes from 'prop-types';
 import { DEFAULT_BANNER_IMAGE } from '../../configs/constants';
 import { getRandomNumber, getNextRoundRobin } from '../../lib/utils';
 
-const propTypes = {
-  altText: PropTypes.string,
-  banners: PropTypes.arr,
-  defaultBanner: PropTypes.string,
-  duration: PropTypes.number,
-  height: PropTypes.number,
-  random: PropTypes.bool,
-};
-const defaultProps = {
-  altText: 'Default Banner',
-  banners: '',
-  defaultBanner: DEFAULT_BANNER_IMAGE,
-  duration: 2000,
-  height: 200,
-  random: false,
-};
 class Slider extends Component {
   constructor(props) {
     super(props);
@@ -26,15 +10,14 @@ class Slider extends Component {
   }
 
   componentDidMount() {
-    const { random, duration } = this.props;
+    const { random, duration, banners } = this.props;
     this.interval = setInterval(() => {
       const { index } = this.state;
-      console.log('....................', index);
       if (random) {
-        this.setState({ index: getRandomNumber(6) });
+        this.setState({ index: getRandomNumber(banners.length) });
         return;
       }
-      const val = getNextRoundRobin(6, index);
+      const val = getNextRoundRobin(banners.length, index);
       this.setState({
         index: val,
       });
@@ -58,7 +41,6 @@ render() {
   } = this.props;
   const { index } = this.state;
   const source = (banners) ? banners[index] : defaultBanner;
-  console.log(banners);
   return (
     <>
       <img src={source} {...rest} alt={altText} height={height} />
@@ -66,6 +48,20 @@ render() {
   );
 }
 }
-Slider.propTypes = propTypes;
-Slider.defaultProps = defaultProps;
+Slider.propTypes = {
+  altText: PropTypes.string,
+  banners: PropTypes.string,
+  defaultBanner: PropTypes.string,
+  duration: PropTypes.number,
+  height: PropTypes.number,
+  random: PropTypes.bool,
+};
+Slider.defaultProps = {
+  altText: 'Default Banner',
+  banners: '',
+  defaultBanner: DEFAULT_BANNER_IMAGE,
+  duration: 2000,
+  height: 200,
+  random: false,
+};
 export default Slider;
