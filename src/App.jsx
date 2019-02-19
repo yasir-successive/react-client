@@ -2,7 +2,8 @@ import React from 'react';
 import { TextFieldDemo } from './pages';
 
 const App = () => (
-  <TextFieldDemo />
+  <>
+    <TextFieldDemo />
+  </>
 );
-
 export default App;
