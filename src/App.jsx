@@ -1,9 +1,13 @@
 import React from 'react';
-import { InputDemo } from './pages';
+import { MuiThemeProvider } from '@material-ui/core';
+import { theme } from './theme';
+import { ChildrenDemo } from './pages';
 
 const App = () => (
   <>
-    <InputDemo />
+    <MuiThemeProvider theme={theme}>
+      <ChildrenDemo />
+    </MuiThemeProvider>
   </>
 );
 export default App;
