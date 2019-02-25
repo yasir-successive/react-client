@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { TextField, SelectField, RadioGroup } from '../../components';
+import * as yup from 'yup';
+import style from './style';
+import {
+  TextField,
+  SelectField,
+  RadioGroup,
+  Button,
+} from '../../components';
 import {
 
   cricketOptions,
@@ -9,22 +16,105 @@ import {
   CRICKET,
 } from '../../configs/constants';
 
+const schema = yup.object({
+  value: yup
+    .string().min(3)
+    .required()
+    .label('Name'),
+  sport: yup
+    .string()
+    .required()
+    .label('sport'),
+  CRICKET: yup
+    .string().label('What you do')
+    .when('sport', {
+      is: val => val === 'CRICKET',
+      then: yup.string().required(),
+      otherwise: yup.string().min(0),
+    }),
+  FOOTBALL: yup
+    .string().label('What you do')
+    .when('sport', {
+      is: val => val === 'FOOTBALL',
+      then: yup.string().required(),
+      otherwise: yup.string().min(0),
+    }),
+});
+
 class InputDemo extends Component {
   constructor(props) {
     super(props);
     this.state = {
       value: '',
       sport: '',
-      cricket: '',
-      football: '',
+      CRICKET: '',
+      FOOTBALL: '',
+      errors: {},
+      touch: {},
     };
   }
 
-    handleNameChange = (event) => {
+  handleBlur = field => () => {
+    const { touch } = this.state;
+    touch[field] = true;
+
+    this.setState({
+      touch,
+    }, () => this.handleValidate());
+  }
+
+handleValidate = () => {
+  const parsedErrors = {};
+  const {
+    value,
+    sport,
+  } = this.state;
+
+  schema.validate({
+    value,
+    sport,
+    FOOTBALL,
+    CRICKET,
+  }, { abortEarly: false })
+    .then(() => {
       this.setState({
-        value: event.target.value,
+        errors: parsedErrors,
       });
+    })
+    .catch((errors) => {
+      errors.inner.forEach((error) => {
+        parsedErrors[error.path] = error.message;
+      });
+      this.setState({
+        errors: parsedErrors,
+      });
+    });
+}
+
+isTouched = () => {
+  const { touch } = this.state;
+  return Object.keys(touch).length !== 0;
+}
+
+  getError = (field) => {
+    const { errors, touch } = this.state;
+
+    if (!touch[field]) {
+      return null;
     }
+    return errors[field] || '';
+  }
+
+  hasErrors = () => {
+    const { errors } = this.state;
+    return Object.keys(errors).length !== 0;
+  }
+
+  handleNameChange = (event) => {
+    this.setState({
+      value: event.target.value,
+    }, () => this.handleValidate());
+  }
 
     handleSportsChange = (event) => {
       this.setState({
@@ -52,6 +142,8 @@ class InputDemo extends Component {
             value={cricket}
             options={cricketOptions}
             onChange={this.handlePositionChange}
+            onBlur={this.handleBlur('CRICKET')}
+            error={this.getError('CRICKET')}
           />
         </div>
       );
@@ -69,6 +161,8 @@ class InputDemo extends Component {
             value={football}
             options={footBallOptions}
             onChange={this.handlePositionChange}
+            onBlur={this.handleBlur('FOOTBALL')}
+            error={this.getError('FOOTBALL')}
           />
         </div>
       );
@@ -80,11 +174,31 @@ class InputDemo extends Component {
       return (
         <>
           <h3>Name</h3>
-          <TextField value={value} onChange={this.handleNameChange} />
+          <TextField
+            value={value}
+            onChange={this.handleNameChange}
+            onBlur={this.handleBlur('value')}
+            error={this.getError('value')}
+          />
           <h3>Select the game you play</h3>
-          <SelectField value={sport} onchange={this.handleSportsChange} options={sportsArray} />
+          <SelectField
+            value={sport}
+            onchange={this.handleSportsChange}
+            options={sportsArray}
+            onBlur={this.handleBlur('sport')}
+            error={this.getError('sport')}
+          />
           {this.renderCRICKET()}
           {this.renderFOOTBALL()}
+          <div style={style.base}>
+            <Button value="Cancel" onClick={() => {}} />
+            <Button
+              value="Submit"
+              color="primary"
+              disabled={this.hasErrors() || !this.isTouched()}
+              style={style.active}
+            />
+          </div>
         </>
       );
     }

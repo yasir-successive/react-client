@@ -3,12 +3,12 @@ import propTypes from 'prop-types';
 import style from './style';
 
 const TextField = (props) => {
-  const { error,onChange, ...rest } = props;
+  const { error, onChange, ...rest } = props;
   const redError = (error) ? style.error : {};
   return (
     <>
-      <input type="text" {...rest} style={{ ...style.base, ...redError, color: style.base.color }} onChange= {onChange}/>
-      {(error !== ' ') ? <info style={{ color: 'red' }}>{error}</info> : ''}
+      <input type="text" {...rest} style={{ ...style.base, ...redError, color: style.base.color }} onChange={onChange} />
+      {(error) ? <p style={{ ...redError }}>{error}</p> : ''}
     </>
   );
 };
@@ -18,6 +18,6 @@ TextField.defaultProps = {
 TextField.propTypes = {
   error: propTypes.string,
   value: propTypes.string.isRequired,
-  onChange: propTypes.func,
+  onChange: propTypes.func.isRequired,
 };
 export default TextField;
