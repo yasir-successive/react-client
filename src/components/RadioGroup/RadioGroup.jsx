@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import style from '../Button/style';
 
 const RadioGroup = (props) => {
   const {
     error,
     value,
+    onChange,
     options,
     ...rest
   } = props;
+  const errors = (error) ? style.error : {};
   return (
     <>
       {options.map(option => (
@@ -16,18 +19,18 @@ const RadioGroup = (props) => {
           { option.value }
         </div>
       ))}
+      {(error) ? <p style={{ ...errors }}>{ error}</p> : ''}
     </>
   );
 };
 RadioGroup.defaultProps = {
-  options: [{ id: 0, value: 'select' }],
-  value: '',
-  error: '',
+  options: [],
+  error: 'null',
 };
 RadioGroup.propTypes = {
   error: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  value: PropTypes.string,
+  value: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.objectOf),
 };
 export default RadioGroup;

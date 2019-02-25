@@ -11,6 +11,7 @@ const SelectField = (props) => {
     defaultText,
     ...rest
   } = props;
+  const errors = (error) ? style.error : {};
 
   return (
     <>
@@ -22,7 +23,7 @@ const SelectField = (props) => {
           </option>
         ))}
       </select>
-      {(error) ? <info style={{ color: 'red' }}>{error}</info> : ''}
+      {(error) ? <p style={{ ...errors }}>{error}</p> : ''}
     </>
   );
 };
@@ -37,7 +38,7 @@ SelectField.defaultProps = {
   options: [{ id: 0, value: 'select' }],
   onchange: () => {},
   value: '',
-  error: '',
+  error: 'null',
   defaultText: 'Select',
 };
 export default SelectField;
