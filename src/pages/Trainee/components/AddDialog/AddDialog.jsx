@@ -51,20 +51,6 @@ class AddDialog extends Component {
     confirmPassword: '',
   };
 
-  handleChange = field => (event) => {
-    this.setState({
-      [field]: event.target.value,
-    }, this.handleValidate);
-  }
-
-  handleBlur = index => () => {
-    const { touched } = this.state;
-    touched[index] = true;
-    this.setState({
-      touched,
-    }, () => this.handleValidate());
-  }
-
   handleValidate = () => {
     const {
       name,
@@ -84,6 +70,20 @@ class AddDialog extends Component {
       .catch((errors) => {
         this.handleErrors(errors);
       });
+  }
+
+  handleChange = field => (event) => {
+    this.setState({
+      [field]: event.target.value,
+    }, this.handleValidate);
+  }
+
+  handleBlur = index => () => {
+    const { touched } = this.state;
+    touched[index] = true;
+    this.setState({
+      touched,
+    }, () => this.handleValidate());
   }
 
   handleErrors = (errors) => {
