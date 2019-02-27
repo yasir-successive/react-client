@@ -1,9 +1,14 @@
 import React from 'react';
-import { InputDemo } from './pages';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
+import { theme } from './theme';
+import { Trainee } from './pages';
 
 const App = () => (
   <>
-    <InputDemo />
+    <Typography>
+      <Trainee />
+    </Typography>
   </>
 );
 export default App;
