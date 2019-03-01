@@ -1,18 +1,39 @@
 import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
+
 import { theme } from './theme';
-import { Trainee, SignIn } from './pages';
+import {
+  InputDemo,
+  Login,
+  TextFieldDemo,
+  ChildrenDemo,
+  NoMatch,
+  Trainee,
+} from './pages';
+import { AuthRoute, PrivateRoute } from './routes';
+import { Navbar } from './Layouts/components/Navbar';
 
 const App = () => (
   <>
     <MuiThemeProvider theme={theme}>
-      <Typography>
-        <CssBaseline />
-        <SignIn />
-        <Trainee />
-      </Typography>
+      <CssBaseline />
+
+      <Router>
+        <>
+          <Navbar />
+          <Switch>
+            <AuthRoute exact path="/Login" component={Login} />
+            <PrivateRoute exact path="/text-field-demo" component={TextFieldDemo} />
+            <PrivateRoute exact path="/" component={Trainee} />
+            <PrivateRoute exact path="/input-demo" component={InputDemo} />
+            <PrivateRoute exact path="/children-demo" component={ChildrenDemo} />
+            <PrivateRoute component={NoMatch} />
+
+          </Switch>
+        </>
+      </Router>
     </MuiThemeProvider>
   </>
 );
