@@ -9,13 +9,6 @@ import { Link as RouterLink, Switch, Route } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { theme } from '../../../theme';
-import { AuthRoute, PrivateRoute } from '../../../routes';
-import {
-  InputDemo,
-  Login,
-  TextFieldDemo,
-  ChildrenDemo,
-} from '../../../pages';
 
 const styles = {
   root: {
@@ -47,7 +40,7 @@ function Navbar(props) {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             Trainee Portal
           </Typography>
-          <Link to="/" component={RouterLink} color="inherit" underline="none">
+          <Link to="/trainee" component={RouterLink} color="inherit" underline="none">
             <Button className={classes.button}>TRAINEE</Button>
           </Link>
           <Link to="/text-field-demo" component={RouterLink} color="inherit" underline="none">
@@ -62,8 +55,6 @@ function Navbar(props) {
           <Button className={classes.logout}>LOGOUT</Button>
         </Toolbar>
       </AppBar>
-
-      
     </div>
   );
 }
