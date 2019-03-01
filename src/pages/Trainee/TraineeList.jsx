@@ -27,8 +27,7 @@ class TraineeList extends Component {
     this.setState({ open: false });
   };
 
-  handleTrainee = (record) => {
-    console.log('Details are - ', record);
+  handleTrainee = ( record ) => {
     this.setState({ open: false });
   };
 
