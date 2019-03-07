@@ -9,6 +9,9 @@ import EmailIcon from '@material-ui/icons/Email';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { login } from '../../lib/utils/Api'
+import { SnackBarConsumer } from '../../contexts/SnackBarProvider/SnackBarProvider';
 
 import {
   TextField,
@@ -60,6 +63,7 @@ class Login extends Component {
     touched: {},
     email: '',
     password: '',
+    apiIsFetchingData: false,
   };
 
   handleChange = field => (event) => {
@@ -123,6 +127,20 @@ class Login extends Component {
     const { touched } = this.state;
     return Object.keys(touched).length !== 0;
   }
+  
+  handleLogin = async () => {
+    this.setState({ apiIsFetchingData: true })
+    const loginStatus = await login();
+    this.props.history.push('/trainee');
+
+    this.setState({ apiIsFetchingData: false })
+    
+  }
+  handleSubmit = () => {
+    const { password, email } = this.state;
+    const { onSubmit } = this.props;
+  }
+
 
   render() {
     const {
@@ -132,6 +150,7 @@ class Login extends Component {
     const {
       email,
       password,
+      apiIsFetchingData
     } = this.state;
 
     return (
@@ -150,7 +169,8 @@ class Login extends Component {
             variant="outlined"
             label="Email Address"
             type="text"
-            value={email}
+            value={email} 
+            isDisabled={this.state.apiCallFinished}
             onChange={this.handleChange('email')}
             onBlur={this.handleBlur('email')}
             error={this.getError('email')}
@@ -182,15 +202,21 @@ class Login extends Component {
               ),
             }}
           />
-          <Button
-            className={classes.submit}
-            fullWidth
-            color="primary"
+          <SnackBarConsumer>
+          {({ openSnackbar }) => (
+              <Button
+                onClick={() => { this.handleSubmit(); openSnackbar('Trainee Successfully Created', 'success'); this.handleLogin(); }}
             variant="contained"
+            color="primary"
+            className={classes.submit}
             disabled={this.hasErrors() || !this.isTouched()}
           >
-            SIGN IN
+            Sign In
           </Button>
+          )}
+          </SnackBarConsumer>
+          {apiIsFetchingData && <CircularProgress size={24} className={classes.buttonProgress} />}
+
         </Paper>
       </main>
     );
