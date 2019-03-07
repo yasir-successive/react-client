@@ -2,6 +2,7 @@ import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { SnackBarProvider } from './contexts';
 
 import { theme } from './theme';
 import {
@@ -16,7 +17,7 @@ import { AuthRoute, PrivateRoute } from './routes';
 import { Navbar } from './Layouts/components/Navbar';
 
 const App = () => (
-  <>
+  <SnackBarProvider>
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
 
@@ -35,6 +36,6 @@ const App = () => (
         </>
       </Router>
     </MuiThemeProvider>
-  </>
+  </SnackBarProvider>
 );
 export default App;

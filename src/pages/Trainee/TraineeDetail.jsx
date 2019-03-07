@@ -47,7 +47,6 @@ const styles = theme => ({
 class TraineeDetail extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
   }
 
   getTraineeDetails = (id) => {

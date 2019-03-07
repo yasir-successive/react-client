@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import EmailIcon from '@material-ui/icons/Email';
 import Person from '@material-ui/icons/Person';
 import TextField from '@material-ui/core/TextField';
+import { SnackBarConsumer } from '../../../../contexts/SnackBarProvider/SnackBarProvider';
 
 const styles = theme => ({
   field: {
@@ -118,9 +119,13 @@ class EditDialog extends Component {
             <Button variant="contained" onClick={() => onClose()} color="default">
               Cancel
             </Button>
-            <Button variant="contained" disabled={disabled} onClick={() => this.handleSubmit(name, email)} color="primary" autoFocus>
-              Submit
-            </Button>
+            <SnackBarConsumer>
+              {({ openSnackbar }) => (
+                <Button variant="contained" disabled={disabled} onClick={() => { this.handleSubmit(name, email); openSnackbar('Trainee Successfully Edited', 'success'); }} color="primary" autoFocus>
+                  Submit
+                </Button>
+              )}
+            </SnackBarConsumer>
           </DialogActions>
         </Dialog>
       </>
@@ -138,7 +143,7 @@ const propTypes = {
 };
 const defaultProps = {
   edit: false,
-  onSubmit: () => {},
+  onSubmit: () => { },
 };
 EditDialog.propTypes = propTypes;
 EditDialog.defaultProps = defaultProps;

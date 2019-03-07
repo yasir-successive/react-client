@@ -16,6 +16,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PasswordIcon from '@material-ui/icons/VisibilityOff';
 import Person from '@material-ui/icons/Person';
 import Email from '@material-ui/icons/Email';
+import { SnackBarConsumer } from '../../../../contexts/SnackBarProvider/SnackBarProvider';
 
 const styles = theme => ({
   header: {
@@ -27,7 +28,7 @@ const Schema = yup.object({
   name: yup.string().required().label('Name'),
   email: yup.string().email().required().label('Email Address'),
   password: yup.string()
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, 'contains 8 characters, at least one uppercase letter, one lowercase letter and one number')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, 'Must contains 8 characters, at least one uppercase letter, one lowercase letter and one number')
     .required('Password is required'),
   confirmPassword: yup.string()
     .oneOf([yup.ref('password'), null], 'Must match password')
@@ -51,6 +52,20 @@ class AddDialog extends Component {
     confirmPassword: '',
   };
 
+  handleChange = field => (event) => {
+    this.setState({
+      [field]: event.target.value,
+    }, this.handleValidate);
+  }
+
+  handleBlur = index => () => {
+    const { touched } = this.state;
+    touched[index] = true;
+    this.setState({
+      touched,
+    }, () => this.handleValidate());
+  }
+
   handleValidate = () => {
     const {
       name,
@@ -70,20 +85,6 @@ class AddDialog extends Component {
       .catch((errors) => {
         this.handleErrors(errors);
       });
-  }
-
-  handleChange = field => (event) => {
-    this.setState({
-      [field]: event.target.value,
-    }, this.handleValidate);
-  }
-
-  handleBlur = index => () => {
-    const { touched } = this.state;
-    touched[index] = true;
-    this.setState({
-      touched,
-    }, () => this.handleValidate());
   }
 
   handleErrors = (errors) => {
@@ -237,14 +238,18 @@ class AddDialog extends Component {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="primary">Cancel</Button>
-          <Button
-            onClick={this.handleSubmit}
-            color="primary"
-            variant="contained"
-            disabled={this.hasErrors() || !this.isTouched()}
-          >
-            Submit
-          </Button>
+          <SnackBarConsumer>
+            {({ openSnackbar }) => (
+              <Button
+                onClick={() => { this.handleSubmit(); openSnackbar('Trainee Successfully Created', 'success'); }}
+                color="primary"
+                variant="contained"
+                disabled={this.hasErrors() || !this.isTouched()}
+              >
+                Submit
+              </Button>
+            )}
+          </SnackBarConsumer>
         </DialogActions>
       </Dialog>
     );
