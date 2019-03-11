@@ -8,16 +8,15 @@ import PasswordIcon from '@material-ui/icons/VisibilityOff';
 import EmailIcon from '@material-ui/icons/Email';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { login } from '../../lib/utils/Api'
 import { SnackBarConsumer } from '../../contexts/SnackBarProvider/SnackBarProvider';
-
 import {
   TextField,
   InputAdornment,
   Button,
 } from '@material-ui/core';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import callApi from '../../lib/utils/Api';
 
 const Schema = yup.object({
   email: yup.string().email().required().label('Email Address'),
@@ -55,6 +54,9 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 6,
   },
+  spinner: {
+    position: 'absolute',
+  }
 });
 
 class Login extends Component {
@@ -63,7 +65,7 @@ class Login extends Component {
     touched: {},
     email: '',
     password: '',
-    apiIsFetchingData: false,
+    loading: false,
   };
 
   handleChange = field => (event) => {
@@ -127,20 +129,25 @@ class Login extends Component {
     const { touched } = this.state;
     return Object.keys(touched).length !== 0;
   }
-  
-  handleLogin = async () => {
-    this.setState({ apiIsFetchingData: true })
-    const loginStatus = await login();
-    this.props.history.push('/trainee');
 
-    this.setState({ apiIsFetchingData: false })
-    
+  handleApi = async (openSnackbar) => {
+    this.setState({
+      loading: true,
+    })
+    const { email, password } = this.state;
+    const data = { email, password };
+    const token = await callApi('post', '/login', data);
+    if (token.data) {
+      const { history } = this.props;
+      localStorage.setItem('token', token.data.data);
+      return (history.push('/trainee'));
+    }
+    else {
+      this.setState({
+        loading: false,
+      }, () => {openSnackbar(token, 'error')});
+    }
   }
-  handleSubmit = () => {
-    const { password, email } = this.state;
-    const { onSubmit } = this.props;
-  }
-
 
   render() {
     const {
@@ -150,7 +157,7 @@ class Login extends Component {
     const {
       email,
       password,
-      apiIsFetchingData
+      loading,
     } = this.state;
 
     return (
@@ -169,8 +176,7 @@ class Login extends Component {
             variant="outlined"
             label="Email Address"
             type="text"
-            value={email} 
-            isDisabled={this.state.apiCallFinished}
+            value={email}
             onChange={this.handleChange('email')}
             onBlur={this.handleBlur('email')}
             error={this.getError('email')}
@@ -203,20 +209,20 @@ class Login extends Component {
             }}
           />
           <SnackBarConsumer>
-          {({ openSnackbar }) => (
+            {({ openSnackbar }) => (
               <Button
-                onClick={() => { this.handleSubmit(); openSnackbar('Trainee Successfully Created', 'success'); this.handleLogin(); }}
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            disabled={this.hasErrors() || !this.isTouched()}
-          >
-            Sign In
-          </Button>
-          )}
+                className={classes.submit}
+                fullWidth
+                color="primary"
+                onClick={() => this.handleApi(openSnackbar)}
+                variant="contained"
+                disabled={this.hasErrors() || !this.isTouched() || loading}
+              >
+                {loading && <CircularProgress size={24} className={classes.spinner} />}
+                SIGN IN
+              </Button>
+            )}
           </SnackBarConsumer>
-          {apiIsFetchingData && <CircularProgress size={24} className={classes.buttonProgress} />}
-
         </Paper>
       </main>
     );

@@ -1,15 +1,18 @@
-const axios = require("axios");
+const axios = require('axios');
 
-export const login = async () => {
+const baseUrl = 'https://express-training.herokuapp.com/api/user';
+
+const callApi = async (methodType, url, traineeData) => {
   try {
-    return await axios.post(
-      "https://express-training.herokuapp.com/api/user/login",
-      {
-        email: "head.trainer@successive.tech",
-        password: "Training@123"
-      }
-    );
+    const response = await axios({
+      method: methodType,
+      url: `${baseUrl}${url}`,
+      data: traineeData,
+    });
+    return response;
   } catch (error) {
-    console.error(error);
+    return error.message;
   }
 };
+
+export default callApi;
