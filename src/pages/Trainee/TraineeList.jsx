@@ -5,9 +5,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import * as moment from 'moment';
-import { AddDialog, RemoveDialog, EditDialog } from './components';
+import { AddDialog, EditDialog, RemoveDialog } from './components';
 import { DataTable } from '../../components';
-import trainees from './data/trainee';
+import callApi from '../../lib/utils/Api';
 
 const styles = theme => ({
   button: {
@@ -15,6 +15,10 @@ const styles = theme => ({
     padding: '12px',
     margin: theme.spacing.unit * 3,
   },
+  circular: {
+    marginTop: theme.spacing.unit * 25,
+    marginLeft: theme.spacing.unit * 80,
+  }
 });
 
 class TraineeList extends Component {
@@ -27,31 +31,43 @@ class TraineeList extends Component {
     rowsPerPage: 10,
     page: 0,
     data: '',
+    limit: 10,
+    skip: 0,
+    traineeRecords: '',
     name: '',
     email: '',
+    loading: true,
   };
+
 
   handleClickOpen = () => {
     this.setState({ open: true });
   };
 
   handleClose = () => {
+    this.setState({
+      open: false
+    });
+  };
+
+  handleTrainee = record => {
+    console.log('Details are ', record);
     this.setState({ open: false });
   };
 
-  handleTrainee = (record) => {
-    console.log('Details are - ', record);
-    this.setState({ open: false });
-  };
-
-  getFormattedDate = (date) => {
+  getFormattedDate = date => {
     moment.defaultFormat = 'dddd, MMMM Do YYYY, h:mm:ss a';
-    return (moment(moment.utc(date).toDate().toString()).format(moment.defaultFormat));
-  }
+    return moment(
+      moment
+        .utc(date)
+        .toDate()
+        .toString()
+    ).format(moment.defaultFormat);
+  };
 
   handleSelect = (event, id) => {
     const { history } = this.props;
-    return (history.push(`/trainee/${id}`));
+    return history.push(`/trainee/${id}`);
   };
 
   handleSort = (event, property) => {
@@ -69,7 +85,28 @@ class TraineeList extends Component {
   };
 
   handleChangePage = (event, page) => {
-    this.setState({ page });
+    const newSkip = 10 * page;
+    const newLimit = 10;
+    this.setState({
+      page,
+      skip: newSkip,
+      limit: newLimit,
+      loading: true,
+    });
+    callApi('get', `/trainee?limit=${newLimit}&skip=${newSkip}`).then(
+      details => {
+        if (details.status) {
+          this.setState({
+            traineeRecords: details.data.data.records,
+            loading: false
+          });
+        } else {
+          this.setState({
+            loading: false
+          });
+        }
+      }
+    );
   };
 
   handleEditDialogOpen = (event, record) => {
@@ -82,10 +119,10 @@ class TraineeList extends Component {
     this.setState({ edit: false });
   };
 
-  handleEditSubmit = (data) => {
+  handleEditSubmit = data => {
     console.log('Edited Item ', data);
     this.setState({ edit: false });
-  }
+  };
 
   handleRemoveDialogOpen = (event, record) => {
     event.stopPropagation();
@@ -96,9 +133,26 @@ class TraineeList extends Component {
     this.setState({ remove: false });
   };
 
-  handleRemoveSubmit = (data) => {
+  handleRemoveSubmit = data => {
     console.log('Deleted Item ', data);
     this.setState({ remove: false });
+  };
+
+  componentDidMount() {
+    this.setState({ loading: true });
+    const { skip, limit } = this.state;
+    callApi('get', `/trainee?limit=${limit}&skip=${skip}`).then(details => {
+      if (details.status) {
+        this.setState({
+          traineeRecords: details.data.data.records,
+          loading: false
+        });
+      } else {
+        this.setState({
+          loading: false
+        });
+      }
+    });
   }
 
   render() {
@@ -113,6 +167,8 @@ class TraineeList extends Component {
       page,
       name,
       email,
+      loading,
+      traineeRecords,
     } = this.state;
     const { classes } = this.props;
     return (
@@ -134,7 +190,7 @@ class TraineeList extends Component {
           />
         </div>
         <DataTable
-          data={trainees}
+          data={traineeRecords}
           column={[
             {
               field: 'name',
@@ -144,7 +200,7 @@ class TraineeList extends Component {
             {
               field: 'email',
               label: 'Email Address',
-              format: value => value && value.toUpperCase(),
+              format: value => value && value.toUpperCase()
             },
             {
               field: 'createdAt',
@@ -158,6 +214,8 @@ class TraineeList extends Component {
           onSort={this.handleSort}
           onSelect={this.handleSelect}
           count={100}
+          dataLength={traineeRecords.length}
+          loading={loading}
           rowsPerPage={rowsPerPage}
           page={page}
           actions={[
@@ -192,7 +250,8 @@ class TraineeList extends Component {
 }
 TraineeList.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
-  match: PropTypes.shape({ url: PropTypes.string, path: PropTypes.string }).isRequired,
+  match: PropTypes.shape({ url: PropTypes.string, path: PropTypes.string })
+    .isRequired,
   history: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 export default withStyles(styles)(TraineeList);

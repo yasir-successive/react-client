@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const baseUrl = 'https://express-training.herokuapp.com/api/user';
+const baseUrl = 'https://express-training.herokuapp.com/api';
 
 const callApi = async (methodType, url, traineeData) => {
   try {
@@ -8,6 +8,7 @@ const callApi = async (methodType, url, traineeData) => {
       method: methodType,
       url: `${baseUrl}${url}`,
       data: traineeData,
+      headers: { Authorization: localStorage.getItem('token') },
     });
     return response;
   } catch (error) {

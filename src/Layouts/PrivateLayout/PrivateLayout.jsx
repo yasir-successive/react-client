@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Navbar } from '../components';
 import { theme } from '../../theme';
 
 const propTypes = {

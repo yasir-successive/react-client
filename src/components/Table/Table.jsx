@@ -10,6 +10,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { withLoaderAndMessage } from '../HOC';
 
 const CustomTableCell = withStyles(theme => ({
   head: {
@@ -160,4 +161,4 @@ DataTable.defaultProps = {
   actions: null,
 };
 
-export default withStyles(styles)(DataTable);
+export default withStyles(styles)(withLoaderAndMessage(DataTable));

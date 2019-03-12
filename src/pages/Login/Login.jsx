@@ -56,7 +56,7 @@ const styles = theme => ({
   },
   spinner: {
     position: 'absolute',
-  }
+  },
 });
 
 class Login extends Component {
@@ -133,10 +133,10 @@ class Login extends Component {
   handleApi = async (openSnackbar) => {
     this.setState({
       loading: true,
-    })
+    });
     const { email, password } = this.state;
     const data = { email, password };
-    const token = await callApi('post', '/login', data);
+    const token = await callApi('post', '/user/login', data);
     if (token.data) {
       const { history } = this.props;
       localStorage.setItem('token', token.data.data);
