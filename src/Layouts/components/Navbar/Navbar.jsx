@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { Link as RouterLink, Switch, Route } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { theme } from '../../../theme';
@@ -30,7 +30,11 @@ const styles = {
   },
 };
 
-function Navbar(props) {
+function handleClearToken() {
+  localStorage.removeItem('token');
+}
+
+function NavBar(props) {
   const { classes } = props;
   return (
     <div className={classes.root}>
@@ -52,15 +56,17 @@ function Navbar(props) {
           <Link to="/children-demo" component={RouterLink} color="inherit" underline="none">
             <Button className={classes.button}>CHILDREN DEMO</Button>
           </Link>
-          <Button className={classes.logout}>LOGOUT</Button>
+          <Link to="/login" component={RouterLink} color="inherit" underline="none">
+            <Button onClick={handleClearToken} className={classes.logout}>LOGOUT</Button>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>
   );
 }
 
-Navbar.propTypes = {
+NavBar.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
-export default withStyles(styles)(Navbar);
+export default withStyles(styles)(NavBar);

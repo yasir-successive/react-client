@@ -55,10 +55,10 @@ const RemoveDialog = (props) => {
             <Button
               variant="contained"
               onClick={() => {
+                onSubmit(data);
                 if (data.createdAt < Date) {
                   openSnackbar('Trainee can not be Deleted', 'error');
                 } else {
-                  onSubmit(data);
                   openSnackbar('Trainee Successfully Deleted', 'success');
                 }
               }}
