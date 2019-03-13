@@ -45,10 +45,6 @@ const styles = theme => ({
 });
 
 class TraineeDetail extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   getTraineeDetails = (id) => {
     let traineeDetail;
     trainees.forEach((details) => {

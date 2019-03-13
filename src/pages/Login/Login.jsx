@@ -8,13 +8,15 @@ import PasswordIcon from '@material-ui/icons/VisibilityOff';
 import EmailIcon from '@material-ui/icons/Email';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { SnackBarConsumer } from '../../contexts/SnackBarProvider/SnackBarProvider';
 import {
   TextField,
   InputAdornment,
   Button,
 } from '@material-ui/core';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import callApi from '../../lib/utils/Api';
 
 const Schema = yup.object({
   email: yup.string().email().required().label('Email Address'),
@@ -52,6 +54,9 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 6,
   },
+  spinner: {
+    position: 'absolute',
+  },
 });
 
 class Login extends Component {
@@ -60,6 +65,7 @@ class Login extends Component {
     touched: {},
     email: '',
     password: '',
+    loading: false,
   };
 
   handleChange = field => (event) => {
@@ -124,6 +130,25 @@ class Login extends Component {
     return Object.keys(touched).length !== 0;
   }
 
+  handleApi = async (openSnackbar) => {
+    this.setState({
+      loading: true,
+    });
+    const { email, password } = this.state;
+    const data = { email, password };
+    const token = await callApi('post', '/user/login', data);
+    if (token.data) {
+      const { history } = this.props;
+      localStorage.setItem('token', token.data.data);
+      return (history.push('/trainee'));
+    }
+    else {
+      this.setState({
+        loading: false,
+      }, () => {openSnackbar(token, 'error')});
+    }
+  }
+
   render() {
     const {
       classes,
@@ -132,6 +157,7 @@ class Login extends Component {
     const {
       email,
       password,
+      loading,
     } = this.state;
 
     return (
@@ -182,15 +208,21 @@ class Login extends Component {
               ),
             }}
           />
-          <Button
-            className={classes.submit}
-            fullWidth
-            color="primary"
-            variant="contained"
-            disabled={this.hasErrors() || !this.isTouched()}
-          >
-            SIGN IN
-          </Button>
+          <SnackBarConsumer>
+            {({ openSnackbar }) => (
+              <Button
+                className={classes.submit}
+                fullWidth
+                color="primary"
+                onClick={() => this.handleApi(openSnackbar)}
+                variant="contained"
+                disabled={this.hasErrors() || !this.isTouched() || loading}
+              >
+                {loading && <CircularProgress size={24} className={classes.spinner} />}
+                SIGN IN
+              </Button>
+            )}
+          </SnackBarConsumer>
         </Paper>
       </main>
     );
