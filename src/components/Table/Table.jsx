@@ -4,7 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TableBody from '@material-ui/core/TableBody';
+import Button from '@material-ui/core/Button';
 import TableCell from '@material-ui/core/TableCell';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
@@ -38,6 +40,14 @@ const styles = theme => ({
       backgroundColor: theme.palette.background.default,
     },
   },
+  footer: {
+    fontSize: 10,
+  },
+  button: {
+    display: 'flex',
+    color: theme.palette.background.primary,
+    marginRight: theme.spacing.unit * 12,
+  },
 });
 class DataTable extends Component {
   constructor(props) {
@@ -55,6 +65,11 @@ class DataTable extends Component {
       orderBy,
       order,
       onSort,
+      count,
+      page,
+      rowsPerPage,
+      onChangePage,
+      actions,
     } = this.props;
     return (
       <Paper className={classes.root}>
@@ -95,15 +110,32 @@ class DataTable extends Component {
                       : <CustomTableCell align={cols.align}>{trainee[cols.field]}</CustomTableCell>
                   ))
                 }
+                {
+                  actions.map(action => (
+                    <Button
+                      className={classes.button}
+                      onClick={event => action.handler(event, trainee)}
+                    >
+                      {action.icon}
+                    </Button>
+                  ))
+                }
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={count}
+          rowsPerPageOptions={[]}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={onChangePage}
+        />
       </Paper>
     );
   }
 }
-
 
 DataTable.propTypes = {
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
@@ -113,11 +145,19 @@ DataTable.propTypes = {
   onSort: PropTypes.func.isRequired,
   order: PropTypes.string,
   orderBy: PropTypes.string,
+  count: PropTypes.number.isRequired,
+  page: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  onChangePage: PropTypes.func.isRequired,
+  actions: PropTypes.objectOf(PropTypes.string),
 };
 
 DataTable.defaultProps = {
   order: 'asc',
   orderBy: '',
+  page: 0,
+  rowsPerPage: 10,
+  actions: null,
 };
 
 export default withStyles(styles)(DataTable);
